@@ -56,12 +56,18 @@ public class UserController {
 		user.setCart(cart);
 		if(createUserRequest.getPassword().length() < 7 ||
 		!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
-			log.warn("cannot create user");
+			log.warn("password must be 8 characters or more");
 			return ResponseEntity.badRequest().build();
 		}
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
-		userRepository.save(user);
-		return ResponseEntity.ok(user);
+		try{
+			userRepository.save(user);
+			log.info("user: " + user.getUsername() + " created successfully");
+			return ResponseEntity.ok(user);
+		}catch(Exception e){
+			log.error("cannot create user: " + user.getUsername());
+		}
+		return ResponseEntity.badRequest().build();
 	}
 	
 }

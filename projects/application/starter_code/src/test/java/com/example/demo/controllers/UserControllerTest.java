@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class UserControllerTest {
 
@@ -47,5 +48,33 @@ public class UserControllerTest {
         assertNotNull(u);
         assertEquals(0, u.getId());
         assertEquals("Test", u.getUsername());
+    }
+
+    @Test
+    public void find_user_by_username(){
+
+        User user = new User();
+        user.setUsername("Andy");
+
+        when(userRepository.findByUsername("Andy")).thenReturn(user);
+        final ResponseEntity<User> response = userController.findByUserName("Andy");
+        System.out.println(response);
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Andy", response.getBody().getUsername());
+    }
+
+    @Test
+    public void find_user_by_id(){
+
+        User user = new User();
+        user.setUsername("Andy");
+        user.setId(1);
+
+        when(userRepository.findById(user.getId())).thenReturn(java.util.Optional.of(user));
+        final ResponseEntity<User> response = userController.findById(user.getId());
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("Andy", response.getBody().getUsername());
     }
 }
